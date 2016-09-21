@@ -13,8 +13,4 @@
     tools:context="ca.squall.cupboard.FoodsActivity"
     tools:showIn="@layout/app_bar_foods">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
 </RelativeLayout>

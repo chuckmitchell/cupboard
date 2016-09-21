@@ -1,20 +1,26 @@
 package ca.squall.cupboard;
 
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 public class FoodsActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        FoodSupplyFragment.OnListFragmentInteractionListener,
+        ShoppingFoodFragment.OnListFragmentInteractionListener {
+
+    private static final String TAG = "FoodsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +33,22 @@ public class FoodsActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FoodDialogFragment frag = new FoodDialogFragment();
+//                frag.setContext(context);
+                frag.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        //notifyDataSetChanged();
+                    }
+                });
+
+                frag.show(ft, "txn_tag");
+
+
+//                Snackbar.make(view, "Added Food.", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
 
@@ -40,6 +60,13 @@ public class FoodsActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_current_food);
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_foods, new FoodSupplyFragment())
+                    .commit();
+        }
     }
 
     @Override
@@ -81,11 +108,18 @@ public class FoodsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_current_food) {
+            Log.d(TAG, "Opening Cupboard List.");
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_foods, new FoodSupplyFragment())
+                    .commit();
             // Handle the camera action
         } else if (id == R.id.nav_shopping) {
-
+            Log.d(TAG, "Opening Shopping List.");
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_foods, new ShoppingFoodFragment())
+                    .commit();
         } else if (id == R.id.nav_recipes) {
-
+            Log.d(TAG, "Opening Recipe List.");
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -96,4 +130,10 @@ public class FoodsActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onListFragmentInteraction(Food item) {
+
+    }
+
 }
